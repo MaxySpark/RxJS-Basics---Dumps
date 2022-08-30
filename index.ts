@@ -1,6 +1,6 @@
 import './style.css';
 
-import { Observable, Observer } from 'rxjs';
+import { fromEvent } from 'rxjs';
 
 const observer = {
   next: (value: any) => console.log('next', value),
@@ -8,26 +8,15 @@ const observer = {
   complete: () => console.log('complete'),
 };
 
-const observable = new Observable((subscriber) => {
-  let count = 0;
+const source$ = fromEvent(document, 'click');
 
-  const id = setInterval(() => {
-    subscriber.next(count);
-    count++;
-  }, 1000);
+const subscription = source$.subscribe(observer);
+const subscriptionTwo = source$.subscribe(observer);
 
-  return () => {
-    console.log('Clean Up');
-    clearInterval(id);
-  };
-});
-
-const subscription = observable.subscribe(observer);
-const subscriptionTwo = observable.subscribe(observer);
-
-subscription.add(subscriptionTwo);
+// subscription.add(subscriptionTwo);
 
 setTimeout(() => {
+  console.log('Unsubscribing subscription');
   subscription.unsubscribe();
   // subscriptionTwo.unsubscribe();
 }, 3500);
